@@ -1,3 +1,18 @@
 /vendor/
 /composer.lock
 /.phpunit.cache/
+
+# IDE and editor files.
+.idea/
+.vscode/
+.fleet/
+*.swp
+*.swo
+*~
+
+# OS-generated files.
+.DS_Store
+Thumbs.db
+
+# PHPUnit result cache.
+/.phpunit.result.cache
