@@ -1,0 +1,34 @@
+{
+  "name": "nmangold/drush-updbex",
+  "description": "A standalone Drush command to rebuild caches, run database updates, and conditionally export configuration.",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.2",
+    "drush/drush": "^12.5 || ^13.0"
+  },
+  "conflict": {
+    "drush/drush": "<12.5 || >=14.0"
+  },
+  "require-dev": {
+    "drupal/core": "^10.3 || ^11.0",
+    "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "YourVendor\\DrushUpdbex\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "YourVendor\\DrushUpdbex\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "drupal/core-composer-scaffold": false,
+      "symfony/runtime": false
+    },
+    "sort-packages": true
+  }
+}
