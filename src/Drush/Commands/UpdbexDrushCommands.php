@@ -12,6 +12,7 @@ use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
 use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use UnexpectedValueException;
 use YourVendor\DrushUpdbex\ConfigStatusResponse;
@@ -63,7 +64,7 @@ final class UpdbexDrushCommands extends DrushCommands
                 [],
                 array_merge($redispatchOptions, ['format' => 'json']),
             );
-            $this->mustRun($process);
+            $this->mustRun($process, true);
 
             return ConfigStatusResponse::decode($process->getOutput());
         };
@@ -76,13 +77,18 @@ final class UpdbexDrushCommands extends DrushCommands
         );
     }
 
-    private function mustRun(ProcessBase $process): void
+    private function mustRun(ProcessBase $process, bool $hideStdout = false): void
     {
+        $this->output()->writeln('Running: ' . $process->getCommandLine(), OutputInterface::OUTPUT_RAW);
         try {
-            $process->mustRun();
+            $realtimeOutput = $process->showRealtime();
+            if ($hideStdout) {
+                $realtimeOutput->hideStdout();
+            }
+            $process->mustRun($realtimeOutput);
         } catch (ProcessFailedException $exception) {
-            $exitCode = $exception->getProcess()->getExitCode();
-            throw new RuntimeException($exception->getMessage(), $exitCode ?: 1, $exception);
+            $exitCode = $exception->getProcess()->getExitCode() ?: 1;
+            throw new RuntimeException(sprintf('Command failed with exit code %d.', $exitCode), $exitCode, $exception);
         }
     }
 }

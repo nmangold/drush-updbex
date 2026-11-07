@@ -34,7 +34,7 @@ Run the workflow from the Drupal project using its normal Drush site context:
 drush updbex
 ```
 
-Standard Drush site aliases and URI selection are preserved. Standard Drush verbosity is also available, for example `drush -v updbex` or `drush -vvv updbex`.
+Standard Drush site aliases and URI selection are preserved. Each subprocess command line is displayed before execution, and its stdout and stderr are streamed as it runs. Standard Drush verbosity is available, for example `drush -v updbex` or `drush -vvv updbex`.
 
 To rebuild caches and run database updates without checking or exporting configuration:
 
@@ -62,31 +62,29 @@ The actual export remains Drush's `config:export` command. Drush checks the conf
 
 ## Example output
 
-When changes are detected:
+The exact command paths, options, and Drush output depend on the site. For example, when changes are detected:
 
 ```text
 Starting cache rebuild...
+Running: '/path/to/vendor/bin/drush' 'cache:rebuild'
+>  [success] Cache rebuild complete.
 Cache rebuild completed.
 Starting database updates...
+Running: '/path/to/vendor/bin/drush' 'updatedb' '--yes'
+>  [notice] Update started: example_update_10001
+>  [notice] Update completed: example_update_10001
 Database updates completed.
 Checking active configuration against the synchronization directory...
+Running: '/path/to/vendor/bin/drush' 'updbex:config-status' '--format=json'
 Configuration changes detected. Exporting active configuration to the configured synchronization directory; existing YAML files there will be replaced.
 Starting configuration export...
+Running: '/path/to/vendor/bin/drush' 'config:export' '--yes'
+>  [success] Configuration successfully exported to /path/to/config/sync.
 Configuration export completed.
 updbex workflow completed successfully.
 ```
 
-When no changes are detected:
-
-```text
-Starting cache rebuild...
-Cache rebuild completed.
-Starting database updates...
-Database updates completed.
-Checking active configuration against the synchronization directory...
-No configuration changes detected. Skipping configuration export.
-updbex workflow completed successfully.
-```
+When no changes are detected, the internal status response indicates this and the workflow skips the configuration export.
 
 ## Development and tests
 
@@ -95,7 +93,7 @@ composer install
 vendor/bin/phpunit
 ```
 
-The tests cover workflow order and failure handling, conditional/disabled exports, status response validation, configured sync storage selection, Drupal storage comparer change types and collections, and PSR-4 command class discovery. A full command smoke test requires a Drupal project with a configured database and Drush site context.
+The tests cover realtime subprocess output, workflow order and failure handling, conditional/disabled exports, status response validation, configured sync storage selection, Drupal storage comparer change types and collections, and PSR-4 command class discovery. A full command smoke test requires a Drupal project with a configured database and Drush site context.
 
 ## Contributing
 
